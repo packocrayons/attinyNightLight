@@ -23,8 +23,9 @@ uint8_t _ocr0a = OCR0A_SLOW_TICK;
 
 void enable_compb(){
 	cli();
-	TCCR1 = (1 << CS12); //set to zero, then clk/8 prescale
-	TIMSK |= 1 << OCIE1B | (1 << TOIE1);
+	TCCR1 = (1 << CS12); //set to zero, then clk/8 prescale. PWM mode clear OC1B on compare match
+	GTCCR = (1 << COM1B1);
+	TIMSK |= (1 << TOIE1);
 	sei();	
 }
 
@@ -112,12 +113,7 @@ ISR(TIMER0_COMPA_vect){
 	TCNT0 = 0;
 }
 
-ISR(TIMER1_COMPB_vect){
-//toggle led pin low
-	PORTB &= ~(1 << PORTB3);
-}
-
 ISR(TIMER1_OVF_vect){
-	//toggle LED pin high
+	//toggle LED pin high, hardware controls the toggle low
 	PORTB |= (1 << PORTB3);
 }
